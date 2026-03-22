@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="upload-wrapper">
+    <div class="upload-card">
+        <div class="upload-header">
+            <div style="font-size:3rem;color:#e60023;margin-bottom:.75rem;">
+                <i class="fa-solid fa-thumbtack"></i>
+            </div>
+            <h2>Upload your CSV</h2>
+            <p>Drop in a CSV file with an "Image URL" column and we'll display all your pins in a beautiful gallery.</p>
+        </div>
+
+        <form action="{% url 'gallery:upload' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="file-drop-area" id="drop-area">
+                <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <p class="drop-text">Drag & drop your CSV here</p>
+                <p class="drop-subtext">or click to browse your files</p>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" class="file-input" required>
+            </div>
+
+            <div class="file-info hidden" id="file-info">
+                <i class="fa-solid fa-file-csv" style="color:#e60023;font-size:1.2rem;"></i>
+                <span id="file-name" style="flex:1;text-align:left;">filename.csv</span>
+                <button type="button" class="btn-remove-file" id="remove-file">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submit-btn" disabled>
+                Show my gallery <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

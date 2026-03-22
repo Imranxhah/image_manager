@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="gallery-header">
+    <div class="stats">
+        <h2>Your Gallery</h2>
+        <span class="badge" id="image-count">{{ images|length }} pins</span>
+    </div>
+    <div class="actions" style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+        <a href="{% url 'gallery:upload' %}" class="btn-outline">
+            <i class="fa-solid fa-upload"></i> Upload New
+        </a>
+        <a href="{% url 'gallery:download_csv' %}" class="btn-outline">
+            <i class="fa-solid fa-file-csv"></i> Download CSV
+        </a>
+        <button class="btn-primary" id="btn-download-images" onclick="openDownloadModal()">
+            <i class="fa-solid fa-images"></i> Download Images
+        </button>
+    </div>
+</div>
+
+<!-- Download Progress Modal -->
+<div id="download-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-card">
+        <div id="modal-phase-download">
+            <h3 class="modal-title"><i class="fa-solid fa-cloud-arrow-down"></i> Downloading Images</h3>
+            <p class="modal-sub" id="dl-label">Starting download…</p>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+            </div>
+            <div class="progress-stats">
+                <span id="dl-count">0 / 0</span>
+                <span id="dl-percent">0%</span>
+            </div>
+            <p class="modal-hint" id="dl-failed" style="display:none;color:#e60023;"></p>
+        </div>
+
+        <div id="modal-phase-zip" style="display:none;">
+            <h3 class="modal-title"><i class="fa-solid fa-file-zipper"></i> Creating ZIP</h3>
+            <p class="modal-sub">Compressing all images into a zip file, please wait…</p>
+            <div class="zip-spinner">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+        </div>
+
+        <div id="modal-phase-done" style="display:none;">
+            <div class="done-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h3 class="modal-title">Ready to Download!</h3>
+            <p class="modal-sub" id="done-summary"></p>
+            <a href="/gallery/get-zip/" class="btn-primary btn-download-zip" id="btn-get-zip">
+                <i class="fa-solid fa-download"></i> Download ZIP
+            </a>
+            <button class="btn-outline btn-close-modal" onclick="closeDownloadModal()" style="margin-top:.5rem;">Close</button>
+        </div>
+
+        <div id="modal-phase-error" style="display:none;">
+            <div class="done-icon" style="color:#e60023;"><i class="fa-solid fa-circle-xmark"></i></div>
+            <h3 class="modal-title">Something went wrong</h3>
+            <p class="modal-sub" id="error-msg"></p>
+            <button class="btn-outline btn-close-modal" onclick="closeDownloadModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="masonry-grid" id="masonry-grid">
+    {% for img in images %}
+    <div class="masonry-item" id="item-{{ img.internal_id }}" data-id="{{ img.internal_id }}">
+        <div class="image-wrapper">
+            <a href="{{ img.internal_image_url }}" target="_blank" class="img-link">
+                <img src="{{ img.internal_image_url }}" alt="Pin" loading="lazy"
+                     onerror="this.closest('.masonry-item').style.display='none'">
+            </a>
+            <div class="overlay">
+                <button class="btn-icon btn-delete" data-id="{{ img.internal_id }}" title="Delete">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+{% endblock content %}
